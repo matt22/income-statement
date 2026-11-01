@@ -1,8 +1,22 @@
-export default function HomePage() {
+import { Suspense } from "react";
+import { IncomeStatementReport } from "@/components/income-statement-report";
+import { buildIncomeStatement } from "@/lib/income-statement";
+import { loadLedger } from "@/lib/ledger";
+import { getValidDateRange } from "@/lib/date-range";
+
+type HomePageProps = {
+  searchParams: Promise<{ start?: string; end?: string }>;
+};
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const params = await searchParams;
+  const range = getValidDateRange(params.start, params.end) ?? { start: "2026-01-01", end: "2026-03-31" };
+  const ledger = loadLedger();
+  const statement = buildIncomeStatement(ledger, range.start, range.end);
+
   return (
-    <main className="mx-auto min-h-screen max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">Income Statement</h1>
-      <p className="mt-3 text-slate-600">The report scaffold is ready for the ledger and calculation core.</p>
-    </main>
+    <Suspense fallback={<main className="p-8">Loading report…</main>}>
+      <IncomeStatementReport initialStatement={statement} />
+    </Suspense>
   );
 }
