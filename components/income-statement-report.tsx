@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { DateRangeForm } from "@/components/date-range-form";
 import { StatementRow } from "@/components/statement-row";
 import { getValidDateRange, INVALID_DATE_RANGE_MESSAGE } from "@/lib/date-range";
+import { NO_POSTED_ACTIVITY_MESSAGE } from "@/lib/income-statement";
 import type { IncomeStatement } from "@/lib/income-statement";
 
 type IncomeStatementReportProps = {
@@ -56,7 +57,7 @@ export function IncomeStatementReport({ initialStatement }: IncomeStatementRepor
         {error ? <p className="mt-4 text-sm text-red-700" role="alert">{error}</p> : null}
       </section>
 
-      {!hasActivity ? <p className="mb-4 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-900">No posted activity for this period.</p> : null}
+      {!hasActivity ? <p className="mb-4 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-900">{NO_POSTED_ACTIVITY_MESSAGE}</p> : null}
 
       <section aria-label="Income statement report" className="overflow-x-auto rounded-lg border border-slate-300 bg-white shadow-sm">
         <table className="w-full min-w-[34rem] border-collapse">

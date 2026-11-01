@@ -2,6 +2,7 @@ import { parseCents } from "@/lib/money";
 import type { Account, JournalEntry, Ledger } from "@/lib/ledger";
 
 export const SECTION_IDS = ["revenue", "cogs", "operating_expenses", "other_income"] as const;
+export const NO_POSTED_ACTIVITY_MESSAGE = "No posted activity for this period.";
 export type SectionId = (typeof SECTION_IDS)[number];
 
 export type StatementLine = {

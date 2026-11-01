@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { INVALID_DATE_RANGE_MESSAGE } from "../lib/date-range";
+import { NO_POSTED_ACTIVITY_MESSAGE } from "../lib/income-statement";
 
 test("runs a report for a selected date range", async ({ page }) => {
   await page.goto("/");
@@ -27,4 +28,10 @@ test("shows an error instead of running an invalid date range", async ({ page })
 
   await expect(page.locator("p[role='alert']")).toHaveText(INVALID_DATE_RANGE_MESSAGE);
   await expect(page).toHaveURL(/\/$/);
+});
+
+test("shows a message when the period has no posted activity", async ({ page }) => {
+  await page.goto("/?start=2027-01-01&end=2027-01-31");
+
+  await expect(page.locator("p").filter({ hasText: NO_POSTED_ACTIVITY_MESSAGE })).toHaveText(NO_POSTED_ACTIVITY_MESSAGE);
 });
