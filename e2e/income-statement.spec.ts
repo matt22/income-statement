@@ -35,3 +35,15 @@ test("shows a message when the period has no posted activity", async ({ page }) 
 
   await expect(page.locator("p").filter({ hasText: NO_POSTED_ACTIVITY_MESSAGE })).toHaveText(NO_POSTED_ACTIVITY_MESSAGE);
 });
+
+test("resets a custom report period to the default range", async ({ page }) => {
+  await page.goto("/?start=2026-01-01&end=2026-01-31");
+
+  await expect(page.getByRole("button", { name: "Reset Report" })).toBeVisible();
+  await page.getByRole("button", { name: "Reset Report" }).click();
+
+  await expect(page).toHaveURL(/start=2026-01-01&end=2026-03-31/);
+  await expect(page.getByLabel("Start date")).toHaveValue("2026-01-01");
+  await expect(page.getByLabel("End date")).toHaveValue("2026-03-31");
+  await expect(page.getByRole("row", { name: /Net income/ })).toContainText("-$44,480.14");
+});

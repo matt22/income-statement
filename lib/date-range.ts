@@ -3,6 +3,7 @@ export type DateRange = {
   end: string;
 };
 
+export const DEFAULT_REPORT_RANGE: DateRange = { start: "2026-01-01", end: "2026-03-31" };
 export const INVALID_DATE_RANGE_MESSAGE =
   "Choose a valid date range with the start date on or before the end date.";
 

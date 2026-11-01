@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { DateRangeForm } from "@/components/date-range-form";
 import { IncomeStatementHeader } from "@/components/income-statement-header";
 import { IncomeStatementTable } from "@/components/income-statement-table";
-import { getValidDateRange, INVALID_DATE_RANGE_MESSAGE } from "@/lib/date-range";
+import { DEFAULT_REPORT_RANGE, getValidDateRange, INVALID_DATE_RANGE_MESSAGE } from "@/lib/date-range";
 import { NO_POSTED_ACTIVITY_MESSAGE } from "@/lib/income-statement";
 import type { IncomeStatement } from "@/lib/income-statement";
 
@@ -33,6 +33,11 @@ export function IncomeStatementReport({ initialStatement }: IncomeStatementRepor
     startTransition(() => router.replace(`/?${params.toString()}`, { scroll: false }));
   }
 
+  function resetReport() {
+    const params = new URLSearchParams(DEFAULT_REPORT_RANGE);
+    startTransition(() => router.replace(`/?${params.toString()}`, { scroll: false }));
+  }
+
   const hasActivity = initialStatement.sections.some((section) => section.lines.some((line) => line.amountCents !== 0));
 
   return (
@@ -50,6 +55,7 @@ export function IncomeStatementReport({ initialStatement }: IncomeStatementRepor
           onStartChange={setStart}
           onEndChange={setEnd}
           onSubmit={runReport}
+          onReset={resetReport}
         />
         {error ? <p className="mt-4 text-sm text-red-700" role="alert">{error}</p> : null}
       </section>

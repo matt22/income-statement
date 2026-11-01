@@ -5,6 +5,7 @@ type DateRangeFormProps = {
   onStartChange: (value: string) => void;
   onEndChange: (value: string) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onReset: () => void;
 };
 
 export function DateRangeForm({
@@ -14,6 +15,7 @@ export function DateRangeForm({
   onStartChange,
   onEndChange,
   onSubmit,
+  onReset,
 }: DateRangeFormProps) {
   return (
     <form className="flex flex-wrap items-end gap-4" onSubmit={onSubmit}>
@@ -43,6 +45,14 @@ export function DateRangeForm({
         disabled={loading}
       >
         {loading ? "Loading…" : "Run report"}
+      </button>
+      <button
+        className="rounded-md border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-wait disabled:opacity-60"
+        type="button"
+        onClick={onReset}
+        disabled={loading}
+      >
+        Reset Report
       </button>
     </form>
   );

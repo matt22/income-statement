@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { IncomeStatementReport } from "@/components/income-statement-report";
 import { buildIncomeStatement } from "@/lib/income-statement";
 import { loadLedger } from "@/lib/ledger";
-import { getValidDateRange } from "@/lib/date-range";
+import { DEFAULT_REPORT_RANGE, getValidDateRange } from "@/lib/date-range";
 
 type HomePageProps = {
   searchParams: Promise<{ start?: string; end?: string }>;
@@ -10,7 +10,7 @@ type HomePageProps = {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
-  const range = getValidDateRange(params.start, params.end) ?? { start: "2026-01-01", end: "2026-03-31" };
+  const range = getValidDateRange(params.start, params.end) ?? DEFAULT_REPORT_RANGE;
   const ledger = loadLedger();
   const statement = buildIncomeStatement(ledger, range.start, range.end);
 
