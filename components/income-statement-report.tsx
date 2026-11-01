@@ -1,10 +1,10 @@
 "use client";
 
-import { Fragment, useEffect, useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Fragment, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { DateRangeForm } from "@/components/date-range-form";
 import { StatementRow } from "@/components/statement-row";
-import { getValidDateRange } from "@/lib/date-range";
+import { getValidDateRange, INVALID_DATE_RANGE_MESSAGE } from "@/lib/date-range";
 import type { IncomeStatement } from "@/lib/income-statement";
 
 type IncomeStatementReportProps = {
@@ -13,25 +13,17 @@ type IncomeStatementReportProps = {
 
 export function IncomeStatementReport({ initialStatement }: IncomeStatementReportProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  const [statement, setStatement] = useState(initialStatement);
-  const [start, setStart] = useState(searchParams.get("start") ?? initialStatement.start);
-  const [end, setEnd] = useState(searchParams.get("end") ?? initialStatement.end);
+  const [start, setStart] = useState(initialStatement.start);
+  const [end, setEnd] = useState(initialStatement.end);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setStatement(initialStatement);
-    setStart(searchParams.get("start") ?? initialStatement.start);
-    setEnd(searchParams.get("end") ?? initialStatement.end);
-  }, [initialStatement, searchParams]);
 
   function runReport(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
     if (!getValidDateRange(start, end)) {
-      setError("Choose a valid date range with the start date on or before the end date.");
+      setError(INVALID_DATE_RANGE_MESSAGE);
       return;
     }
 
@@ -39,14 +31,14 @@ export function IncomeStatementReport({ initialStatement }: IncomeStatementRepor
     startTransition(() => router.replace(`/?${params.toString()}`, { scroll: false }));
   }
 
-  const hasActivity = statement.sections.some((section) => section.lines.some((line) => line.amountCents !== 0));
+  const hasActivity = initialStatement.sections.some((section) => section.lines.some((line) => line.amountCents !== 0));
 
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-5 py-10 sm:px-8">
       <header className="border-b border-slate-300 pb-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">{statement.company}</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">{initialStatement.company}</p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Income Statement</h1>
-        <p className="mt-2 text-slate-600">{statement.start} through {statement.end}</p>
+        <p className="mt-2 text-slate-600">{initialStatement.start} through {initialStatement.end}</p>
       </header>
 
       <section aria-labelledby="date-range-heading" className="py-7">
@@ -75,7 +67,7 @@ export function IncomeStatementReport({ initialStatement }: IncomeStatementRepor
             </tr>
           </thead>
           <tbody>
-            {statement.sections.map((section) => (
+            {initialStatement.sections.map((section) => (
               <Fragment key={section.id}>
                 <tr className="bg-slate-50/70">
                   <th className="px-5 py-3 text-left text-sm font-semibold uppercase tracking-wide text-slate-700" colSpan={2} scope="rowgroup">
@@ -87,16 +79,16 @@ export function IncomeStatementReport({ initialStatement }: IncomeStatementRepor
                     key={line.accountNumber}
                     label={`${line.accountNumber} · ${line.accountName}`}
                     amountCents={line.amountCents}
-                    currency={statement.currency}
+                    currency={initialStatement.currency}
                     indent
                   />
                 ))}
-                <StatementRow label={`${section.label} total`} amountCents={section.totalCents} currency={statement.currency} emphasis />
+                <StatementRow label={`${section.label} total`} amountCents={section.totalCents} currency={initialStatement.currency} emphasis />
               </Fragment>
             ))}
-            <StatementRow label="Gross profit" amountCents={statement.grossProfitCents} currency={statement.currency} emphasis />
-            <StatementRow label="Operating income" amountCents={statement.operatingIncomeCents} currency={statement.currency} emphasis />
-            <StatementRow label="Net income" amountCents={statement.netIncomeCents} currency={statement.currency} emphasis />
+            <StatementRow label="Gross profit" amountCents={initialStatement.grossProfitCents} currency={initialStatement.currency} emphasis />
+            <StatementRow label="Operating income" amountCents={initialStatement.operatingIncomeCents} currency={initialStatement.currency} emphasis />
+            <StatementRow label="Net income" amountCents={initialStatement.netIncomeCents} currency={initialStatement.currency} emphasis />
           </tbody>
         </table>
       </section>

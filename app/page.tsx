@@ -16,7 +16,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   return (
     <Suspense fallback={<main className="p-8">Loading report…</main>}>
-      <IncomeStatementReport initialStatement={statement} />
+      <IncomeStatementReport key={`${range.start}:${range.end}`} initialStatement={statement} />
     </Suspense>
   );
 }
