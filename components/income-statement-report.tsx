@@ -1,9 +1,10 @@
 "use client";
 
-import { Fragment, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { DateRangeForm } from "@/components/date-range-form";
-import { StatementRow } from "@/components/statement-row";
+import { IncomeStatementHeader } from "@/components/income-statement-header";
+import { IncomeStatementTable } from "@/components/income-statement-table";
 import { getValidDateRange, INVALID_DATE_RANGE_MESSAGE } from "@/lib/date-range";
 import { NO_POSTED_ACTIVITY_MESSAGE } from "@/lib/income-statement";
 import type { IncomeStatement } from "@/lib/income-statement";
@@ -36,11 +37,7 @@ export function IncomeStatementReport({ initialStatement }: IncomeStatementRepor
 
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-5 py-10 sm:px-8">
-      <header className="border-b border-slate-300 pb-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">{initialStatement.company}</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Income Statement</h1>
-        <p className="mt-2 text-slate-600">{initialStatement.start} through {initialStatement.end}</p>
-      </header>
+      <IncomeStatementHeader statement={initialStatement} />
 
       <section aria-labelledby="date-range-heading" className="py-7">
         <h2 id="date-range-heading" className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">
@@ -59,40 +56,7 @@ export function IncomeStatementReport({ initialStatement }: IncomeStatementRepor
 
       {!hasActivity ? <p className="mb-4 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-900">{NO_POSTED_ACTIVITY_MESSAGE}</p> : null}
 
-      <section aria-label="Income statement report" className="overflow-x-auto rounded-lg border border-slate-300 bg-white shadow-sm">
-        <table className="w-full min-w-[34rem] border-collapse">
-          <thead className="bg-slate-50 text-sm text-slate-500">
-            <tr>
-              <th className="px-5 py-3 text-left font-medium" scope="col">Account</th>
-              <th className="px-5 py-3 text-right font-medium" scope="col">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {initialStatement.sections.map((section) => (
-              <Fragment key={section.id}>
-                <tr className="bg-slate-50/70">
-                  <th className="px-5 py-3 text-left text-sm font-semibold uppercase tracking-wide text-slate-700" colSpan={2} scope="rowgroup">
-                    {section.label}
-                  </th>
-                </tr>
-                {section.lines.map((line) => (
-                  <StatementRow
-                    key={line.accountNumber}
-                    label={`${line.accountNumber} · ${line.accountName}`}
-                    amountCents={line.amountCents}
-                    currency={initialStatement.currency}
-                    indent
-                  />
-                ))}
-                <StatementRow label={`${section.label} total`} amountCents={section.totalCents} currency={initialStatement.currency} emphasis />
-              </Fragment>
-            ))}
-            <StatementRow label="Gross profit" amountCents={initialStatement.grossProfitCents} currency={initialStatement.currency} emphasis />
-            <StatementRow label="Operating income" amountCents={initialStatement.operatingIncomeCents} currency={initialStatement.currency} emphasis />
-            <StatementRow label="Net income" amountCents={initialStatement.netIncomeCents} currency={initialStatement.currency} emphasis />
-          </tbody>
-        </table>
-      </section>
+      <IncomeStatementTable statement={initialStatement} />
     </main>
   );
 }
