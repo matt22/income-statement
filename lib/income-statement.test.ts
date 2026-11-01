@@ -37,4 +37,13 @@ describe("buildIncomeStatement", () => {
       ]),
     );
   });
+
+  it("returns zero totals for a valid period with no posted activity", () => {
+    const statement = buildIncomeStatement(loadLedger(), "2027-01-01", "2027-01-31");
+
+    expect(statement.sections.every((section) => section.totalCents === 0)).toBe(true);
+    expect(statement.grossProfitCents).toBe(0);
+    expect(statement.operatingIncomeCents).toBe(0);
+    expect(statement.netIncomeCents).toBe(0);
+  });
 });
