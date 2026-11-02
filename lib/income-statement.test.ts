@@ -19,6 +19,29 @@ describe("buildIncomeStatement", () => {
     expect(statement.netIncomeCents).toBe(-4_448_014);
   });
 
+  it("groups posted activity into monthly buckets", () => {
+    const statement = buildIncomeStatement(loadLedger(), "2026-01-01", "2026-03-31");
+    const revenue = statement.sections.find((section) => section.id === "revenue")!;
+
+    expect(statement.buckets.map((bucket) => bucket.key)).toEqual(["2026-01", "2026-02", "2026-03"]);
+    expect(statement.buckets.map((bucket) => bucket.label)).toEqual(["Jan 2026", "Feb 2026", "Mar 2026"]);
+    expect(revenue.totalCentsByBucket).toEqual({
+      "2026-01": 1_345_075,
+      "2026-02": 854_975,
+      "2026-03": 1_585_000,
+    });
+  });
+
+  it("labels partial months with their actual report dates", () => {
+    const statement = buildIncomeStatement(loadLedger(), "2026-01-15", "2026-03-10");
+
+    expect(statement.buckets.map((bucket) => bucket.label)).toEqual([
+      "Jan 15–31, 2026",
+      "Feb 2026",
+      "Mar 1–10, 2026",
+    ]);
+  });
+
   it("includes both date boundaries and excludes draft and void entries", () => {
     const statement = buildIncomeStatement(loadLedger(), "2026-01-05", "2026-01-31");
 
